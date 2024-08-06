@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'go_router/app_router.dart';
+import 'go_router/router/app_router.dart';
 import 'go_router/shared_preferences_manager.dart';
 
 void main() async {

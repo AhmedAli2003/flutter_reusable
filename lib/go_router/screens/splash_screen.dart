@@ -4,14 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../router/page_path_and_name.dart';
 import '../shared_preferences_manager.dart';
-import 'home_screen.dart';
-import 'login_screen.dart';
-import 'on_boarding_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
-  static const String name = 'Splash-Screen';
-  static const String path = '/splash-screen';
   const SplashScreen({super.key});
 
   @override
@@ -27,12 +23,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       final prefs = ref.read(sharedPreferencesManagerProvider);
       final isLoggedIn = prefs.isLoggedIn();
       if (isLoggedIn) {
-        context.goNamed(HomePage.name);
+        context.goNamed(Pages.home.name);
       } else {
         if (!prefs.isOnBoardingCompleted()) {
-          context.goNamed(OnBoardingScreen.name);
+          context.goNamed(Pages.onBoarding.name);
         } else {
-          context.goNamed(LoginScreen.name);
+          context.goNamed(Pages.login.name);
         }
       }
     });

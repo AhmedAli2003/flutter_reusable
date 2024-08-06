@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../auth_state.dart';
+import '../router/page_path_and_name.dart';
 import '../shared_preferences_manager.dart';
 
 class LoginScreen extends ConsumerWidget {
-  static const String path = '/login';
-  static const String name = 'Login-Screen';
-
   const LoginScreen({super.key});
 
   @override
@@ -21,6 +20,8 @@ class LoginScreen extends ConsumerWidget {
           onPressed: () {
             AuthState().signIn();
             ref.read(sharedPreferencesManagerProvider).setLoggedIn();
+            // ref.read(goToAnotherPageInAppProvider.notifier).state = true;
+            GoRouter.of(context).goNamed(Pages.home.name);
           },
           child: const Text('Login'),
         ),

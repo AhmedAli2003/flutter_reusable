@@ -43,4 +43,4 @@ One of the key features of this project is the ability to change the page transi
 
 ## Demo Video
 
-<video src='/assets/transitions.mp4' width=506 height=1080/>
+[![Watch the video]](/assets/transitions.mp4)

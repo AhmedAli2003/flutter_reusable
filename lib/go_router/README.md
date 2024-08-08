@@ -41,4 +41,6 @@ This project includes the following page transitions:
 
 One of the key features of this project is the ability to change the page transition dynamically at runtime using the Riverpod package. This provides flexibility and enhances the user experience by allowing smooth and varied transitions between pages.
 
-<video src='../../assets/transitions.mp4' width=180>
+## Demo Video
+
+<video src='../../assets/transitions.mp4' width=506 height=1080/>

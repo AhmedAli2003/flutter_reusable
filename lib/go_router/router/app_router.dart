@@ -1,29 +1,25 @@
 import 'dart:async';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../auth_state.dart';
+import '../utils/auth_state.dart';
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/on_boarding_screen.dart';
 import '../screens/page_one.dart';
-import '../screens/page_two.dart';
 import '../screens/splash_screen.dart';
-import '../widgets/quit_alert_dialog.dart';
 import 'page_path_and_name.dart';
 
 part 'page_transitions.dart';
 part 'transition_details.dart';
 part 'transitions.dart';
 
-// final goToAnotherPageInAppProvider = StateProvider<bool>((ref) => false);
-
 final appRouterProvider = Provider<AppRouter>((ref) => AppRouter(ref: ref));
 
 class AppRouter {
-  // ignore: unused_field
   final Ref _ref;
 
   AppRouter({required Ref ref}) : _ref = ref;
@@ -44,7 +40,6 @@ class AppRouter {
   late final _onBoardingRoute = GoRoute(
     path: Pages.onBoarding.path,
     name: Pages.onBoarding.name,
-    // onExit: _onExitApp,
     pageBuilder: (context, state) {
       return getCustomTransition(
         TransitionDetails(
@@ -63,7 +58,6 @@ class AppRouter {
   late final _loginRoute = GoRoute(
     path: Pages.login.path,
     name: Pages.login.name,
-    // onExit: _onExitApp,
     pageBuilder: (context, state) {
       return getCustomTransition(
         TransitionDetails(
@@ -82,7 +76,6 @@ class AppRouter {
   late final _pageOneRoute = GoRoute(
     path: Pages.pageOne.path,
     name: Pages.pageOne.name,
-    // onExit: _onExitApp,
     pageBuilder: (context, state) {
       return getCustomTransition(
         TransitionDetails(
@@ -90,27 +83,7 @@ class AppRouter {
           state: state,
           page: const PageOne(),
           name: Pages.pageOne.name,
-          transition: Transitions.sizeCenterHorizontal,
-          curve: Curves.fastLinearToSlowEaseIn,
-          reverseCurve: Curves.easeInToLinear,
-          duration: Durations.extralong4,
-        ),
-      );
-    },
-  );
-
-  late final _pageTwoRoute = GoRoute(
-    path: Pages.pageTwo.path,
-    name: Pages.pageTwo.name,
-    // onExit: _onExitApp,
-    pageBuilder: (context, state) {
-      return getCustomTransition(
-        TransitionDetails(
-          context: context,
-          state: state,
-          page: const PageTwo(),
-          name: Pages.pageTwo.name,
-          transition: Transitions.sizeCenterVertical,
+          transition: _ref.read(transitionProvider),
           curve: Curves.fastLinearToSlowEaseIn,
           reverseCurve: Curves.easeInToLinear,
           duration: Durations.extralong4,
@@ -137,7 +110,6 @@ class AppRouter {
     },
     routes: [
       _pageOneRoute,
-      _pageTwoRoute,
     ],
   );
 
@@ -164,18 +136,22 @@ class AppRouter {
     }
   }
 
-  // ignore: unused_element
-  FutureOr<bool> _onExitApp(BuildContext context, GoRouterState state) async {
-    // if (_ref.read(goToAnotherPageInAppProvider)) {
-    //   _ref.read(goToAnotherPageInAppProvider.notifier).state = false;
-    //   return true;
-    // }
-
-    final pop = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) => const QuitAlertDialog(),
+  Future<T?> pushNamed<T extends Object?>(
+    BuildContext context,
+    String name, {
+    Map<String, String> pathParameters = const <String, String>{},
+    Map<String, dynamic> queryParameters = const <String, dynamic>{},
+    Object? extra,
+    Transitions? transition,
+  }) async {
+    if (transition != null) {
+      _ref.read(transitionProvider.notifier).state = transition;
+    }
+    return await GoRouter.of(context).pushNamed<T>(
+      name,
+      pathParameters: pathParameters,
+      queryParameters: queryParameters,
+      extra: extra,
     );
-
-    return pop ?? false;
   }
 }

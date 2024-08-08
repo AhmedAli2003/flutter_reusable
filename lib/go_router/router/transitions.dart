@@ -1,5 +1,7 @@
 part of 'app_router.dart';
 
+final transitionProvider = StateProvider<Transitions>((ref) => Transitions.fade);
+
 enum Transitions {
   slideRightToLeft,
   slideLeftToRight,
@@ -18,7 +20,10 @@ enum Transitions {
   scaleFromTopLeft,
   scaleFromBottomLeft,
   fade,
-  // switcher,
+  fadeScale,
+  switcherVertical,
+  switcherHorizontal,
+  switcherScale,
 }
 
 CustomTransitionPage getCustomTransition(TransitionDetails details) {
@@ -40,6 +45,10 @@ CustomTransitionPage getCustomTransition(TransitionDetails details) {
     Transitions.scaleFromTopLeft => _getScaleTransition(details: details),
     Transitions.scaleFromBottomLeft => _getScaleTransition(details: details),
     Transitions.fade => _getFadeTransition(details: details),
+    Transitions.switcherHorizontal => _getSwicherTransition(details: details),
+    Transitions.switcherVertical => _getSwicherTransition(details: details),
+    Transitions.switcherScale => _getSwicherTransition(details: details),
+    Transitions.fadeScale => _getFadeScaleTransition(details: details),
   };
 }
 
@@ -137,6 +146,10 @@ Alignment _getAxisAlignment(Transitions transition) {
     Transitions.scaleFromTopLeft => Alignment.topLeft,
     Transitions.scaleFromBottomLeft => Alignment.bottomLeft,
     Transitions.fade => Alignment.center,
+    Transitions.switcherHorizontal => Alignment.center,
+    Transitions.switcherVertical => Alignment.center,
+    Transitions.switcherScale => Alignment.center,
+    Transitions.fadeScale => Alignment.center,
   };
 }
 
@@ -168,6 +181,64 @@ CustomTransitionPage _getScaleTransition({
       return ScaleTransition(
         scale: curvedAnimation,
         alignment: _getAxisAlignment(details.transition),
+        child: child,
+      );
+    },
+  );
+}
+
+SharedAxisTransitionType _getSharedAxisTransitionTypeForSwitcherTransition(Transitions transition) {
+  if (transition == Transitions.switcherVertical) {
+    return SharedAxisTransitionType.vertical;
+  } else if (transition == Transitions.switcherHorizontal) {
+    return SharedAxisTransitionType.horizontal;
+  } else {
+    return SharedAxisTransitionType.scaled;
+  }
+}
+
+CustomTransitionPage _getSwicherTransition({
+  required TransitionDetails details,
+}) {
+  return CustomTransitionPage(
+    key: details.state.pageKey,
+    name: details.name,
+    transitionDuration: details.duration ?? Durations.long2,
+    reverseTransitionDuration: details.reverseDuration ?? Durations.medium2,
+    child: details.page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: details.curve ?? Curves.fastLinearToSlowEaseIn,
+        reverseCurve: Curves.fastOutSlowIn,
+      );
+      return SharedAxisTransition(
+        animation: curvedAnimation,
+        secondaryAnimation: secondaryAnimation,
+        transitionType: _getSharedAxisTransitionTypeForSwitcherTransition(details.transition),
+        child: child,
+      );
+    },
+  );
+}
+
+CustomTransitionPage _getFadeScaleTransition({
+  required TransitionDetails details,
+}) {
+  return CustomTransitionPage(
+    key: details.state.pageKey,
+    name: details.name,
+    transitionDuration: details.duration ?? Durations.long2,
+    reverseTransitionDuration: details.reverseDuration ?? Durations.medium2,
+    child: details.page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: details.curve ?? Curves.fastLinearToSlowEaseIn,
+        reverseCurve: Curves.fastOutSlowIn,
+      );
+      return FadeScaleTransition(
+        animation: curvedAnimation,
         child: child,
       );
     },
